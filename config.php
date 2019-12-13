@@ -1,22 +1,20 @@
-<?php 
+<?php
 class config
 {
-    private static $instance = NULL;
-    public static function getConnection()
-    {
-        if(!isset(self::$instance))
-        {
-            try {
-                //PDO PHP Data Objects
-                //Parametres: type de Base de donnees utilise mysql host nom de la connection
-                self::$instance = new PDO('mysql:host=localhost;dbname=validation 2;','root','');
-            }   
-            catch (Execption $e){
+  private static $instance = NULL;
 
-                die('Erreur: '.$e->getMessage());
-            }
-        }
-    return self::$instance;
+  public static function getConnexion()
+  {
+    if (!isset(self::$instance)) {
+
+      try {
+        self::$instance = new PDO('mysql:host=localhost;dbname=tresor', 'root', '');
+        self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        //pour afficher les erreurs
+      } catch (Exception $e) {
+        die('Erreur: ' . $e->getMessage());
+      }
     }
+    return self::$instance;
+  }
 }
-?>

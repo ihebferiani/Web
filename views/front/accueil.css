@@ -1,0 +1,16 @@
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    padding: 20px;
+
+  }
+  
+  .title{
+ 
+  font-size:35px;
+  color:#14500a;
+ 
+
+  }

@@ -1,0 +1,104 @@
+<HTML>
+
+    <head>
+            <link rel="stylesheet" type="text/css" href="mystyle.css">
+    </head>
+    <style>
+            caption 
+            {
+                padding:10px;
+                color: #78960f;
+                font-weight:bold;
+                font-size: 1.2em;
+            }
+            .content-table {
+              border-collapse: collapse;
+              margin: 25px 0;
+              font-size: 0.9em;
+              min-width: 400px;
+              border-radius: 5px 5px 0 0;
+              overflow: hidden;
+              box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+              font-family: sans-serif;
+            
+            }
+            
+            .content-table thead tr {
+              background-color: #78960f;
+              color: #ffffff;
+              text-align: left;
+              font-weight: bold;
+            }
+            
+            .content-table th,
+            .content-table th {
+              padding: 12px 15px;
+            }
+            
+            .content-table tbody tr {
+              border-bottom: 1px solid #dddddd;
+            }
+            
+            .content-table tbody tr:nth-of-type(even) {
+              background-color: #f3f3f3;
+            } 
+            
+            
+            
+            
+            .content-table tbody th.active-row {
+              font-weight: bold;
+               
+            }
+            a
+            {
+                color:#78960f;
+                font-weight: bold;
+            }
+            th 
+            {
+                color: #78960f;
+            }
+            </style>
+            
+            
+            
+    <body>
+            <form method="POST" action="AjouterProduit.php">
+                    <table border="0" cellpadding=3% class="content-table">
+                        <caption>Ajouter Produit</caption>
+                        <form action="AjouterProduit.php" method="post">
+            
+                <tr>
+                    <th>Image</th>
+                    <td><input type="file" name="Image"></td>
+                </tr>
+               
+              
+                <tr>
+                    <th> <label for="Nom"> Nom</label></th>
+                    <td><input type="text" name="Nom" id="Nom" placeholder="veuillez saisir le nom"onblur="verifNomDes(this)"></td>
+                </tr>
+                
+                <tr>
+                    <th><label for="Description"> Description</label></th>
+                    <td><input type="text" name="Description"  id="Description" placeholder="veuillez saisir la description"onblur="verifNomDes(this)"></td>
+                </tr>
+                <tr>
+                    <th><label for="Prix"> Prix</label></th>
+                    <td><input type="number" name="Prix" id="Prix"  placeholder="veuillez saisir le prix" onblur="verifPrix(this)"></td>
+                </tr>
+
+                
+                <tr>
+   
+                        <td colspan="2" align="center"><input type="submit" name="ajouter" value="ajouter">
+                        </td>
+                </tr>
+
+            </table>
+        </form>
+        <script src="AjouterProduit.js"></script>
+    </body>
+    
+    </HTMl>

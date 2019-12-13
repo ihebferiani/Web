@@ -2,62 +2,9 @@
 session_start();
 $ip_add = getenv("REMOTE_ADDR");
 include "db.php";
-if(isset($_POST["category"])){
-	$category_query = "SELECT * FROM category";
-	$run_query = mysqli_query($con,$category_query) or die(mysqli_error($con));
-	echo "
-		<div class='nav nav-pills nav-stacked'>
-			<li class='active'><a href='#'><h4>Categories</h4></a></li>
-	";
-	if(mysqli_num_rows($run_query) > 0){
-		while($row = mysqli_fetch_array($run_query)){
-			$cid = $row["id"];
-			$cat_name = $row["cat_title"];
-			echo "
-					<li><a href='#' class='category' cid='$cid'>$cat_name</a></li>
-			";
-		}
-		echo "</div>";
-	}
-}
-if(isset($_POST["brand"])){
-	$brand_query = "SELECT * FROM brands";
-	$run_query = mysqli_query($con,$brand_query);
-	echo "
-		<div class='nav nav-pills nav-stacked'>
-			<li class='active'><a href='#'><h4>Brands</h4></a></li>
-	";
-	if(mysqli_num_rows($run_query) > 0){
-		while($row = mysqli_fetch_array($run_query)){
-			$bid = $row["brand_id"];
-			$brand_name = $row["brand_title"];
-			echo "
-					<li><a href='#' class='selectBrand' bid='$bid'>$brand_name</a></li>
-			";
-		}
-		echo "</div>";
-	}
-}
-if(isset($_POST["page"])){
-	$sql = "SELECT * FROM products";
-	$run_query = mysqli_query($con,$sql);
-	$count = mysqli_num_rows($run_query);
-	$pageno = ceil($count/9);
-	for($i=1;$i<=$pageno;$i++){
-		echo "
-			<li><a href='#' page='$i' id='page'>$i</a></li>
-		";
-	}
-}
 if(isset($_POST["getProduct"])){
-	$limit = 9;
-	if(isset($_POST["setPage"])){
-		$pageno = $_POST["pageNumber"];
-		$start = ($pageno * $limit) - $limit;
-	}else{
-		$start = 0;
-	}
-	$product_query = "SELECT * FROM products LIMIT $start,$limit";
+
+	$product_query = "SELECT * FROM products ";
 	$run_query = mysqli_query($con,$product_query);
 	if(mysqli_num_rows($run_query) > 0){
 		while($row = mysqli_fetch_array($run_query)){
@@ -72,7 +19,7 @@ if(isset($_POST["getProduct"])){
 							<div class='panel panel-info'>
 								<div class='panel-heading'>$pro_title</div>
 								<div class='panel-body'>
-									<img src='product_images/$pro_image' style='width:160px; height:250px;'/>
+									<img src='../product_images/$pro_image' style='width:160px; height:250px;'/>
 								</div>
 
 								<div class='panel-heading'>$pro_price.00 DT
@@ -105,7 +52,10 @@ if(isset($_POST["getProduct"])){
 		$run_query = mysqli_query($con,$sql);
 		$count = mysqli_num_rows($run_query);
 		if($count > 0){
-			
+			$sql  = "UPDATE wishlist SET qty = qty + 1 WHERE p_id = '$p_id' AND user_id = '$user_id'";
+			if(mysqli_query($con,$sql)){
+				
+			}
 		} else {
 			$sql = "INSERT INTO `wishlist`
 			(`p_id`, `ip_add`, `user_id`, `qty`) 
@@ -118,7 +68,10 @@ if(isset($_POST["getProduct"])){
 			$sql = "SELECT id FROM wishlist WHERE ip_add = '$ip_add' AND p_id = '$p_id' AND user_id = -1";
 			$query = mysqli_query($con,$sql);
 			if (mysqli_num_rows($query) > 0) {
-			
+				$sql  = "UPDATE wishlist SET qty = qty + 1 WHERE ip_add = '$ip_add' AND p_id = '$p_id' AND user_id = -1";
+				if(mysqli_query($con,$sql)){
+				
+				}
 					exit();
 			}
 			$sql = "INSERT INTO `wishlist`
@@ -152,7 +105,10 @@ if(isset($_POST["getProduct"])){
 		$run_query = mysqli_query($con,$sql);
 		$count = mysqli_num_rows($run_query);
 		if($count > 0){
-			
+			$sql  = "UPDATE cart SET qty = qty + 1 WHERE p_id = '$p_id' AND user_id = '$user_id'";
+			if(mysqli_query($con,$sql)){
+				
+			}
 		} else {
 			$sql = "INSERT INTO `cart`
 			(`p_id`, `ip_add`, `user_id`, `qty`) 
@@ -165,7 +121,10 @@ if(isset($_POST["getProduct"])){
 			$sql = "SELECT id FROM cart WHERE ip_add = '$ip_add' AND p_id = '$p_id' AND user_id = -1";
 			$query = mysqli_query($con,$sql);
 			if (mysqli_num_rows($query) > 0) {
+				$sql  = "UPDATE cart SET qty = qty + 1 WHERE ip_add = '$ip_add' AND p_id = '$p_id' AND user_id = -1";
+				if(mysqli_query($con,$sql)){
 				
+				}
 					exit();
 			}
 			$sql = "INSERT INTO `cart`
@@ -183,18 +142,18 @@ if(isset($_POST["getProduct"])){
 		
 	}
 
-if (isset($_POST["count_item"])) {
-	if (isset($_SESSION["uid"])) {
-		$sql = "SELECT COUNT(*) AS count_item FROM cart WHERE user_id = $_SESSION[uid]";
-	}else{
-		$sql = "SELECT COUNT(*) AS count_item FROM cart WHERE ip_add = '$ip_add' AND user_id < 0";
+	if (isset($_POST["count_item"])) {
+		if (isset($_SESSION["uid"])) {
+			$sql = "SELECT COUNT(*) AS count_item FROM cart WHERE user_id = $_SESSION[uid]";
+		}else{
+			$sql = "SELECT COUNT(*) AS count_item FROM cart WHERE ip_add = '$ip_add' AND user_id < 0";
+		}
+		
+		$query = mysqli_query($con,$sql);
+		$row = mysqli_fetch_array($query);
+		echo $row["count_item"];
+		exit();
 	}
-	
-	$query = mysqli_query($con,$sql);
-	$row = mysqli_fetch_array($query);
-	echo $row["count_item"];
-	exit();
-}
 
 if (isset($_POST["count_wishs"])) {
 	if (isset($_SESSION["uid"])) {
@@ -209,12 +168,25 @@ if (isset($_POST["count_wishs"])) {
 	exit();
 }
 
+
+if(isset($_SESSION['order'])){
+	$order = $_SESSION['order'];
+}else{
+	$order='Prix';
+}
+if(isset($_SESSION['sort'])){
+	$sort=$_SESSION['sort'];
+}else{
+	$sort='DESC';
+}
+
 if (isset($_POST["Common"])) {
 
+
 	if (isset($_SESSION["uid"])) {
-		$sql = "SELECT a.product_id,a.product_title,a.product_price,a.product_image,b.id,b.qty FROM products a,cart b WHERE a.product_id=b.p_id AND b.user_id='$_SESSION[uid]'";
+		$sql = "SELECT a.id as product_id ,a.Nom as product_title,a.Prix as product_price,a.Image as product_image,b.id,b.qty FROM produit a,cart b WHERE a.id=b.p_id AND b.user_id='$_SESSION[uid]' ORDER BY $order $sort";
 	}else{
-		$sql = "SELECT a.product_id,a.product_title,a.product_price,a.product_image,b.id,b.qty FROM products a,cart b WHERE a.product_id=b.p_id AND b.ip_add='$ip_add' AND b.user_id < 0";
+		$sql = "SELECT a.id as product_id ,a.Nom as product_title,a.Prix as product_price,a.Image as product_image,b.id,b.qty FROM produit a,cart b WHERE a.id=b.p_id AND b.ip_add='$ip_add' AND b.user_id < 0 ORDER BY $order $sort";
 	}
 	$query = mysqli_query($con,$sql);
 	if (isset($_POST["getCartItem"])) {
@@ -231,9 +203,9 @@ if (isset($_POST["Common"])) {
 				echo '
 					<div class="row">
 						<div class="col-md-3">'.$n.'</div>
-						<div class="col-md-3"><img class="img-responsive" src="product_images/'.$product_image.'" /></div>
+						<div class="col-md-3"><img class="img-responsive" src="Image/'.$product_image.'" /></div>
 						<div class="col-md-3">'.$product_title.'</div>
-						<div class="col-md-3">'.$product_price.' DT</div>
+						<div class="col-md-3"<a href="?order=Prix&&sort=$sort">'.$product_price.' DT </a></div>
 					</div>';
 				
 			}
@@ -245,7 +217,7 @@ if (isset($_POST["Common"])) {
 	}
 	if (isset($_POST["checkOutDetails"])) {
 		if (mysqli_num_rows($query) > 0) {
-			echo "<form method='post' action='#'>";
+			echo "<form method='post' action='checkout.php'>";
 				$n=0;
 				while ($row=mysqli_fetch_array($query)) {
 					$n++;
@@ -266,7 +238,7 @@ if (isset($_POST["Common"])) {
 								</div>
 								<input type="hidden" name="product_id[]" value="'.$product_id.'"/>
 								<input type="hidden" name="" value="'.$cart_item_id.'"/>
-								<div class="col-md-2"><img class="img-responsive" src="product_images/'.$product_image.'"></div>
+								<div class="col-md-2"><img class="img-responsive" src="Image/'.$product_image.'"></div>
 								<div class="col-md-2">'.$product_title.'</div>
 								<div class="col-md-2"><input type="text" class="form-control qty" value="'.$qty.'" ></div>
 
@@ -295,9 +267,9 @@ if (isset($_POST["Common"])) {
 if (isset($_POST["wishs"])) {
 
 	if (isset($_SESSION["uid"])) {
-		$sql = "SELECT a.product_id,a.product_title,a.product_price,a.product_image,b.id,b.qty FROM products a,wishlist b WHERE a.product_id=b.p_id AND b.user_id='$_SESSION[uid]'";
+		$sql = "SELECT a.id as product_id ,a.Nom as product_title,a.Prix as product_price,a.Image as product_image,b.id,b.qty FROM produit a,wishlist b WHERE a.id=b.p_id AND b.user_id='$_SESSION[uid]'ORDER BY $order $sort";
 	}else{
-		$sql = "SELECT a.product_id,a.product_title,a.product_price,a.product_image,b.id,b.qty FROM products a,wishlist b WHERE a.product_id=b.p_id AND b.ip_add='$ip_add' AND b.user_id < 0";
+		$sql = "SELECT a.id as product_id ,a.Nom as product_title,a.Prix as product_price,a.Image as product_image,b.id,b.qty FROM produit a,wishlist b WHERE a.id=b.p_id AND b.ip_add='$ip_add' AND b.user_id < 0 ORDER BY $order $sort";
 	}
 	$query = mysqli_query($con,$sql);
 
@@ -324,7 +296,7 @@ if (isset($_POST["wishs"])) {
 								</div>
 								<input type="hidden" name="product_id[]" value="'.$product_id.'"/>
 								<input type="hidden" name="" value="'.$cart_item_id.'"/>
-								<div class="col-md-2"><img class="img-responsive" src="product_images/'.$product_image.'"></div>
+								<div class="col-md-2"><img class="img-responsive" src="Image/'.$product_image.'"></div>
 								<div class="col-md-2">'.$product_title.'</div>
 								<div class="col-md-2"><input type="text" class="form-control qty" value="'.$qty.'" ></div>
 
